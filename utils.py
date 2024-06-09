@@ -68,13 +68,13 @@ agent_setup_typing = """
 
 
 agent_setup = """
-    Your options are navigate, press, or done. 
+    Your options are navigate, press, or done.  You can navigate and press to gather the information necessary to complete your objective.
+    If you have the information necessary, return done as a key with the solution to your objective.
     Navigate should take you to the specified URL. 
     Press takes strings where if you want to press on an object, 
     return the string with the yellow character sequence you want to press on.
     For presss, please only respond with the 1-2 letter sequence in the yellow box,
     and if there are multiple valid options choose the one you think a user would select. 
-    When the page seems satisfactory, return done as a key with no value. 
     You must respond in JSON only with no other fluff or bad things will happen.
     Do not return the JSON inside a code block. 
     The JSON keys MUST ONLY be ONE of navigate, press, or done (and optionally, typing). 
@@ -133,7 +133,7 @@ def log_function_call(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Using the custom logger to log method calls
-        logger.info(f"Calling {func.__name__} with args: {args}, kwargs: {kwargs}")
+        logger.info(f"Calling {func.__name__} with args: {args[0].__dict__}, kwargs: {kwargs}")
         result = func(*args, **kwargs)
         # logger.info(f"{func.__name__} returned: {result}")
         return result

@@ -23,7 +23,7 @@ from openai import OpenAI
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
-vimium_path = "./vimium-browser"
+vimium_path = "./vimium-master"
 
 
 class Friend:
@@ -33,12 +33,12 @@ class Friend:
             sync_playwright()
             .start()
             .chromium.launch_persistent_context(
-                "/Users/vicky/Library/Application Support/Google/Chrome",
+                "",
+                # Use this or someting similar if you want chrome history "/Users/vicky/Library/Application Support/Google/Chrome",
                 headless=False,
                 channel= 'chrome' ,
                 args=[
                         '--new-instance',
-
                     f"--disable-extensions-except={vimium_path}",
                     f"--load-extension={vimium_path}",
                 ],
@@ -49,9 +49,10 @@ class Friend:
         self.page.set_viewport_size({"width": 1080, "height": 720})
         self.client = OpenAI()
 
-    @log_function_call
+    #@log_function_call
     def act(self, action):
-        logger.info(action)
+        print(action)
+        # logger.info(action)
 
         if "done" in action:
             return True
@@ -60,11 +61,8 @@ class Friend:
             self.click(action["press"])
             self.type(action["type"])
         
-
-
         if "navigate" in action:
             self.navigate(action["navigate"])
-
 
         elif "type" in action:
             self.type(action["type"])
@@ -73,17 +71,17 @@ class Friend:
             self.click(action["press"])
 
 
-    @log_function_call
+    #@log_function_call
     def navigate(self, url):
         self.page.goto(url=url if "://" in url else "https://" + url, timeout=60000)
 
-    @log_function_call
+    #@log_function_call
     def type(self, text):
 
         self.page.keyboard.type(text)
         self.page.keyboard.press("Enter")
 
-    @log_function_call
+    #@log_function_call
     def click(self, text):
         # print("right here")
         # time.sleep(10)
@@ -93,15 +91,16 @@ class Friend:
         # print("right then")
         # time.sleep(10)
 
-    @log_function_call
+    #@log_function_call
     def capture(self):
         self.page.keyboard.press("Escape")
         self.page.keyboard.type("f")
+        time.sleep(2)
 
         screenshot = Image.open(BytesIO(self.page.screenshot())).convert("RGB")
         return screenshot
 
-    @log_function_call
+    #@log_function_call
     def next_action(self, screenshot, objective,typing=False):
         encoded_screenshot = self.encode_and_resize(screenshot)
         
@@ -122,12 +121,10 @@ class Friend:
                 print("Error: Invalid JSON response")
                 return {}
             return cleaned_json_response
-
-
         return json_response
 
     # Function to encode the image
-    @log_function_call
+    #@log_function_call
     def encode_and_resize(self, image):
         W, H = image.size
         image = image.resize((IMG_RES, int(IMG_RES * H / W)))
@@ -136,7 +133,7 @@ class Friend:
         encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
         return encoded_image
 
-    @log_function_call
+    #@log_function_call
     def fix_json_response(self, response):
         cleaned_response = ask_question(f"The invalid JSON response is: {response.choices[0].message.content}", "You need to fix the invalid JSON response to be valid JSON. You must respond in JSON only with no other fluff or bad things will happen. Do not return the JSON inside a code block", keys=False)
         # print(cleaned_response)

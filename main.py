@@ -11,7 +11,7 @@ from utils import gather_objective, logger
 
 
 def main():
-    print("Creating web ...")
+    print("Creating ...")
     driver = Friend()
 
     driver.navigate("https://www.google.com")
@@ -25,8 +25,7 @@ def main():
 
         typing = action is not None and "typing" in action 
         if not typing:         
-            logger.debug("Capturing the screen...")
-            logger.info("Screenshotting")
+            logger.info("capture photo")
             screenshot = driver.capture()
 
         if typing:
@@ -39,13 +38,11 @@ def main():
 
         logger.debug("Getting actions for the given objective...")
         action = driver.next_action(screenshot, objective, typing=typing)
-
-
-        logger.debug(f"Action: {action}")
         
-        
-        if driver.act(action):  
-            break
+        response =  driver.act(action)
+        if (response):
+            print(f"Response is {action['done']}")
+            return
 
 
 
